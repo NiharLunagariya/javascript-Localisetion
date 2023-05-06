@@ -1,0 +1,288 @@
+//At Html File
+  <div class="col-md-auto col-3">
+                <div class="dropdown topbar-head-dropdown topbar-tag-dropdown justify-content-end">
+                    <button type="button" class="btn btn-icon btn-topbar rounded-circle text-white-50 fs-13" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img id="header-lang-img" src="assets/images/flags/us.svg" alt="Header Language" height="16" class="rounded-circle me-2"> <span id="lang-name">English</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+
+                        <!-- item-->
+                        <a href="javascript:void(0);" class="dropdown-item notify-item language py-2" data-lang="en" title="English">
+                            <img src="assets/images/flags/us.svg" alt="user-image" class="me-2 rounded-circle" height="18">
+                            <span class="align-middle">English</span>
+                        </a>
+
+                        <!-- item-->
+                        <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="sp" title="Spanish">
+                            <img src="assets/images/flags/spain.svg" alt="user-image" class="me-2 rounded-circle" height="18">
+                            <span class="align-middle">Española</span>
+                        </a>
+
+                        <!-- item-->
+                        <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="gr" title="German">
+                            <img src="assets/images/flags/germany.svg" alt="user-image" class="me-2 rounded-circle" height="18"> <span class="align-middle">Deutsche</span>
+                        </a>
+
+                        <!-- item-->
+                        <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="it" title="Italian">
+                            <img src="assets/images/flags/italy.svg" alt="user-image" class="me-2 rounded-circle" height="18">
+                            <span class="align-middle">Italiana</span>
+                        </a>
+
+                        <!-- item-->
+                        <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="ru" title="Russian">
+                            <img src="assets/images/flags/russia.svg" alt="user-image" class="me-2 rounded-circle" height="18">
+                            <span class="align-middle">русский</span>
+                        </a>
+
+                        <!-- item-->
+                        <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="ch" title="Chinese">
+                            <img src="assets/images/flags/china.svg" alt="user-image" class="me-2 rounded-circle" height="18">
+                            <span class="align-middle">中国人</span>
+                        </a>
+
+                        <!-- item-->
+                        <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="fr" title="French">
+                            <img src="assets/images/flags/french.svg" alt="user-image" class="me-2 rounded-circle" height="18">
+                            <span class="align-middle">français</span>
+                        </a>
+
+                        <!-- item-->
+                        <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="ar" title="Arabic">
+                            <img src="assets/images/flags/ae.svg" alt="user-image" class="me-2 rounded-circle" height="18">
+                            <span class="align-middle">عربى</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+//At javascript Localisetion                                                                                                                                                                                    // var navbarMenuHTML = document.querySelrySelector(".navbar-menu").innerHTML;
+    var default_lang = "en"; // set Default Language
+    var language = localStorage.getItem("language");
+    function initLanguage() {
+        // Set new language
+        (language === null) ? setLanguage(default_lang) : setLanguage(language);
+        var languages = document.getElementsByClassName("language");
+        languages && Array.from(languages).forEach(function (dropdown) {
+            dropdown.addEventListener("click", function (event) {
+                setLanguage(dropdown.getAttribute("data-lang"));
+            });
+        });
+    }
+    function setLanguage(lang) {
+        if (document.getElementById("header-lang-img")) {
+            switch (lang) {
+                case "en":
+                    document.getElementById("header-lang-img").src = "assets/images/flags/us_flag.jpg";
+                    break;
+                case "sp":
+                    document.getElementById("header-lang-img").src = "assets/images/flags/spain_flag.jpg";
+                    break;
+                case "gr":
+                    document.getElementById("header-lang-img").src = "assets/images/flags/germany_flag.jpg";
+                    break;
+                case "it":
+                    document.getElementById("header-lang-img").src = "assets/images/flags/italy_flag.jpg";
+                    break;
+                case "ru":
+                    document.getElementById("header-lang-img").src = "assets/images/flags/russia_flag.jpg";
+                    break;
+                case "fr":
+                    document.getElementById("header-lang-img").src = "assets/images/flags/french_flag.jpg";
+                    break;
+                default:
+                    console.error("Unsupported language selected:", lang);
+                    return;
+            }
+            localStorage.setItem("language", lang);
+            language = localStorage.getItem("language");
+            getLanguage();
+        }
+    }
+    // // Multi language setting
+    function getLanguage() {
+        language == null ? setLanguage(default_lang) : false;
+        var request = new XMLHttpRequest();
+        // Instantiating the request object
+        request.open("GET", "assets/lang/" + language + ".json");
+        // Defining event listener for readystatechange event
+        request.onreadystatechange = function () {
+            // Check if the request is compete and was successful
+            if (this.readyState === 4 && this.status === 200) {
+                var data = JSON.parse(this.responseText);
+                Object.keys(data).forEach(function (key) {
+                    var elements = document.querySelectorAll("[data-key='" + key + "']");
+                    Array.from(elements).forEach(function (elem) {
+                        elem.textContent = data[key];
+                        // console.log(key)
+                    });
+                });
+            }
+        };
+        // Sending the request to the server
+        request.send();
+    }
+    // add change event listener on right layout setting
+    function getElementUsingTagname(ele, val) {
+        const inputs = Array.from(document.querySelectorAll(`input[name="${ele}"]`));
+        inputs.forEach(function (x) {
+            x.checked = val === x.value;
+            x.addEventListener("change", function () {
+                document.documentElement.setAttribute(ele, x.value);
+                sessionStorage.setItem(ele, x.value);
+                initLanguage();
+                if (ele === "data-layout-width") {
+                    if (x.value === "boxed") {
+                        document.documentElement.setAttribute("data-sidebar-size", "sm-hover");
+                        sessionStorage.setItem("data-sidebar-size", "sm-hover");
+                        document.getElementById("sidebar-size-small-hover").checked = true;
+                    } else if (x.value === "fluid") {
+                        document.documentElement.setAttribute("data-sidebar-size", "lg");
+                        sessionStorage.setItem("data-sidebar-size", "lg");
+                        document.getElementById("sidebar-size-default").checked = true;
+                    }
+                }
+                if (ele === "data-layout") {
+                    if (x.value === "vertical") {
+                        hideShowLayoutOptions("vertical");
+                        isCollapseMenu();
+                    } else if (x.value === "horizontal") {
+                        hideShowLayoutOptions("horizontal");
+                        const sidebarImg = document.getElementById("sidebarimg-none");
+                        if (sidebarImg) {
+                            sidebarImg.click();
+                        }
+                        setTimeout(() => {
+                            updateHorizontalMenus();
+                        }, 50);
+                    } else if (x.value === "twocolumn") {
+                        hideShowLayoutOptions("twocolumn");
+                        document.documentElement.setAttribute("data-layout-width", "fluid");
+                        document.getElementById("layout-width-fluid").click();
+                        twoColumnMenuGenerate();
+                        initTwoColumnActiveMenu();
+                        isCollapseMenu();
+                    }
+                }
+                if (ele === "data-bs-theme") {
+                    const colorButton = x.value === "light" ? document.getElementById("topbar-color-light")?.click() :
+                        document.getElementById("topbar-color-dark")?.click();
+                    window.dispatchEvent(new Event('resize'));
+                }
+                if (ele === "data-preloader") {
+                    const preloader = document.getElementById("preloader");
+                    if (x.value === "enable" && preloader) {
+                        document.documentElement.setAttribute("data-preloader", "enable");
+                        setTimeout(() => {
+                            preloader.style.opacity = "0";
+                            preloader.style.visibility = "hidden";
+                            document.getElementById("customizerclose-btn").click();
+                        }, 1000);
+                    } else if (x.value === "disable") {
+                        document.documentElement.setAttribute("data-preloader", "disable");
+                        document.getElementById("customizerclose-btn").click();
+                    }
+                }
+            });
+        });
+        if (document.getElementById('collapseBgGradient')) {
+            Array.from(document.querySelectorAll("#collapseBgGradient .form-check input")).forEach(function (subElem) {
+                var myCollapse = document.getElementById('collapseBgGradient');
+                if (subElem.checked) {
+                    var bsCollapse = new bootstrap.Collapse(myCollapse, {
+                        toggle: false,
+                    });
+                    bsCollapse.show();
+                }
+                if (document.querySelector("[data-bs-target='#collapseBgGradient']")) {
+                    document.querySelector("[data-bs-target='#collapseBgGradient']").addEventListener('click', function (elem) {
+                        document.getElementById("sidebar-color-gradient").click();
+                    });
+                }
+            });
+        }
+        const target = document.querySelector("[data-bs-target='#collapseBgGradient']");
+        const inputChecked = document.querySelector("#collapseBgGradient .form-check input:checked");
+        if (target) {
+            if (inputChecked) {
+                target.classList.add("active");
+            } else {
+                target.classList.remove("active");
+            }
+            Array.from(document.querySelectorAll("[name='data-sidebar']")).forEach(function (elem) {
+                elem.addEventListener("change", function () {
+                    if (document.querySelector("#collapseBgGradient .form-check input:checked")) {
+                        target.classList.add("active");
+                    } else {
+                        target.classList.remove("active");
+                    }
+                })
+            })
+        }
+    }
+
+//in assets file
+
+//creat lang folder  ==> 🔰lang
+ 			|
+//create (ar.json,ch.json,en.json,fr.json,gr.josn,it.json,ru.json,sp.json)
+
+// in ar.json tag name 
+{
+    "t-menu": "قائمة طعام",
+    "t-dashboard": "لوحة القيادة",
+    "t-pages": "الصفحات"
+}    
+// in ch.json tag name 
+{
+   "t-menu":"菜单",
+    "t-dashboard":"仪表板",
+    "t-pages": "页数",
+    
+}       
+// in en.json tag name 
+{
+     "t-menu":"Menu",
+    "t-dashboard":"Dashboard",
+    "t-pages": "Pages",
+    
+}    
+// in fr.json tag name 
+{
+      "t-menu": "Menu",
+    "t-dashboard": "Tableau de bord",
+    "t-pages": "pages",
+}    
+// in gr.json tag name 
+{
+     "t-menu": "Speisekarte",
+    "t-dashboard": "Armaturenbrett",
+    "t-pages": "Seiten",
+}    
+// in it.json tag name 
+{
+   "t-menu": "Menù",
+    "t-dashboard": "Pannello",
+    "t-pages": "Pagine"
+}    
+// in ru.json tag name 
+{
+     "t-menu": "Меню",
+    "t-dashboard": "Щиток приборов",
+    "t-pages": "Страницы",
+}    
+// in sp.json tag name 
+{
+    "t-menu": "Menú",
+    "t-dashboard": "Tablero",
+    "t-pages": "Paginas",
+}    
+
+
+// in sidebar or menu html add data-kay for translat language
+
+<span data-key="t-menu">Menu</span>
+ 
+<a href="/" class="nav-link menu-link"> <i class="bi bi-speedometer2"></i> <span data-key="t-dashboard">Dashboard</span> </a>
+
+ <span data-key="t-pages">Pages</span>
